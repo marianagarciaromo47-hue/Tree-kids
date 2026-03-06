@@ -8,13 +8,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-
 body{
 margin:0;
 font-family:'Poppins', sans-serif;
 background: linear-gradient(135deg,#43cea2,#185a9d);
 color:#2c3e50;
 text-align:center;
+overflow-x:hidden;
 }
 
 header{
@@ -23,13 +23,9 @@ padding:25px;
 box-shadow:0 5px 20px rgba(0,0,0,0.15);
 }
 
-header img{
-width:170px;
-}
+header img{ width:170px; }
 
-nav{
-margin-top:15px;
-}
+nav{ margin-top:15px; }
 
 nav button{
 margin:6px;
@@ -48,28 +44,19 @@ background:#1e8449;
 transform:scale(1.05);
 }
 
-.section{
-display:none;
-padding:40px 20px;
-}
-
-.active{
-display:block;
-}
+.section{ display:none; padding:40px 20px; }
+.active{ display:block; }
 
 .card{
 background:white;
-max-width:750px;
+max-width:900px;
 margin:0 auto;
 padding:40px;
 border-radius:25px;
 box-shadow:0 15px 40px rgba(0,0,0,0.2);
 }
 
-h2{
-margin-top:0;
-font-weight:800;
-}
+h2{ margin-top:0; font-weight:800; }
 
 button.option{
 background:#3498db;
@@ -77,12 +64,9 @@ margin:8px;
 border-radius:15px;
 }
 
-button.option:hover{
-background:#2980b9;
-}
+button.option:hover{ background:#2980b9; }
 
 /* memorama */
-
 .grid{
 display:grid;
 grid-template-columns:repeat(4,110px);
@@ -104,36 +88,25 @@ transition:0.3s;
 box-shadow:0 5px 15px rgba(0,0,0,0.2);
 }
 
-.cardMem img{
-width:85px;
-display:none;
-}
+.cardMem img{ width:85px; display:none; }
+.volteada{ background:white; }
+.volteada img{ display:block; }
 
-.volteada{
-background:white;
-}
 
-.volteada img{
-display:block;
-}
-
-/* mapa */
-
-.mapButtons button{
-margin:8px;
-background:#e67e22;
-}
-
-.mapButtons button:hover{
-background:#ca6f1e;
-}
+.mapButtons button:hover{ background:#1ecac4; }
 
 .infoBox{
-margin-top:25px;
-font-size:18px;
+margin: top 25px;
+font: size 18px;
 line-height:1.6;
 }
 
+/* juego tiburon */
+#gameCanvas{
+background:url("fondo_mar.jpg") center/cover;
+border-radius:20px;
+margin-top:20px;
+}
 </style>
 </head>
 
@@ -145,12 +118,11 @@ line-height:1.6;
 <button onclick="show('inicio')">Inicio</button>
 <button onclick="show('quiz')">Quiz</button>
 <button onclick="show('memorama')">Memorama</button>
-<button onclick="show('mapa')">Mapa</button>
+<button onclick="show('tiburon')">Tiburón</button>
 </nav>
 </header>
 
 <!-- INICIO -->
-
 <div id="inicio" class="section active">
 <div class="card">
 <h2>Bienvenidos a TreeKids 🌎</h2>
@@ -159,7 +131,6 @@ line-height:1.6;
 </div>
 
 <!-- QUIZ -->
-
 <div id="quiz" class="section">
 <div class="card">
 <h2 id="pregunta"></h2>
@@ -170,7 +141,6 @@ line-height:1.6;
 </div>
 
 <!-- MEMORAMA -->
-
 <div id="memorama" class="section">
 <div class="card">
 <h2>Memorama de Mascotas</h2>
@@ -179,37 +149,27 @@ line-height:1.6;
 </div>
 </div>
 
-<!-- MAPA -->
 
-<div id="mapa" class="section">
+<!-- JUEGO TIBURON -->
+<div id="tiburon" class="section">
 <div class="card">
-<h2>Explora y Aprende</h2>
-
-<div class="mapButtons">
-<button onclick="info('bosque')">Bosque</button>
-<button onclick="info('oceano')">Océano</button>
-<button onclick="info('ciudad')">Ciudad</button>
-<button onclick="info('artico')">Ártico</button>
-</div>
-
-<div class="infoBox" id="mapaTexto">
-Selecciona un lugar para aprender algo nuevo 🌱
-</div>
-
+<h2>Juego del Tiburón 🦈</h2>
+<p id="vidasTexto"><strong>Vidas: 3</strong></p>
+<canvas id="gameCanvas" width="800" height="400"></canvas>
+<p id="mensajeFinal"></p>
+<button onclick="reiniciar()">Reiniciar</button>
 </div>
 </div>
 
 <script>
 
 /* navegación */
-
 function show(id){
 document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
 document.getElementById(id).classList.add("active");
 }
 
-/* QUIZ sin repetición */
-
+/* QUIZ */
 const preguntas=[
 {p:"¿Qué producen los árboles?",o:["Oxígeno","Basura","Humo"],c:"Oxígeno"},
 {p:"¿Qué debemos reciclar?",o:["Plástico","Comida","Tierra"],c:"Plástico"},
@@ -222,52 +182,26 @@ const preguntas=[
 let restantes=[...preguntas];
 
 function nuevaPregunta(){
-
-if(restantes.length===0){
-restantes=[...preguntas];
-}
-
+if(restantes.length===0) restantes=[...preguntas];
 let i=Math.floor(Math.random()*restantes.length);
-let q=restantes[i];
-restantes.splice(i,1);
-
+let q=restantes.splice(i,1)[0];
 document.getElementById("pregunta").innerText=q.p;
-document.getElementById("contador").innerText=
-"Preguntas restantes: "+restantes.length;
-
-let html="";
-q.o.forEach(op=>{
-html+=`<button class="option" onclick="responder('${op}','${q.c}')">${op}</button>`;
-});
-
-document.getElementById("opciones").innerHTML=html;
+document.getElementById("contador").innerText="Preguntas restantes: "+restantes.length;
+document.getElementById("opciones").innerHTML=q.o.map(op=>
+`<button class="option" onclick="responder('${op}','${q.c}')">${op}</button>`
+).join("");
 }
 
 function responder(op,c){
-if(op===c){
-document.getElementById("resultado").innerText="Correcto 🌟";
-}else{
-document.getElementById("resultado").innerText="Incorrecto ❌";
-}
+document.getElementById("resultado").innerText= op===c ? "Correcto 🌟" : "Incorrecto ❌";
 setTimeout(nuevaPregunta,1200);
 }
-
 nuevaPregunta();
 
-/* MEMORAMA con 6 mascotas */
-
-let imagenes=[
-"mascota1.png","mascota2.png","mascota3.png",
-"mascota4.png","mascota5.png","mascota6.png"
-];
-
-let cartas=[...imagenes,...imagenes];
-cartas.sort(()=>Math.random()-0.5);
-
-let primera=null;
-let bloqueo=false;
-let pares=0;
-
+/* MEMORAMA */
+let imagenes=["mascota1.png","mascota2.png","mascota3.png","mascota4.png","mascota5.png","mascota6.png"];
+let cartas=[...imagenes,...imagenes].sort(()=>Math.random()-0.5);
+let primera=null,bloqueo=false,pares=0;
 const grid=document.getElementById("grid");
 
 cartas.forEach(img=>{
@@ -280,23 +214,13 @@ grid.appendChild(div);
 });
 
 function voltear(carta){
-
-if(bloqueo || carta.classList.contains("volteada")) return;
-
+if(bloqueo||carta.classList.contains("volteada"))return;
 carta.classList.add("volteada");
-
-if(!primera){
-primera=carta;
-}else{
-
+if(!primera){ primera=carta; }
+else{
 if(primera.dataset.valor===carta.dataset.valor){
-pares++;
-primera=null;
-
-if(pares===6){
-document.getElementById("memResult").innerText="¡Completaste el memorama! 🎉";
-}
-
+pares++; primera=null;
+if(pares===6) document.getElementById("memResult").innerText="¡Completaste el memorama! 🎉";
 }else{
 bloqueo=true;
 setTimeout(()=>{
@@ -306,37 +230,109 @@ primera=null;
 bloqueo=false;
 },900);
 }
-
 }
 }
 
-/* MAPA educativo */
-
-function info(lugar){
-
-if(lugar==="bosque"){
-document.getElementById("mapaTexto").innerHTML=
-"🌳 Los bosques producen oxígeno y ayudan a limpiar el aire.";
+/* MAPA */
+function info(l){
+const textos={
+bosque:"🌳 Los bosques producen oxígeno y limpian el aire.",
+oceano:"🌊 El océano genera más del 50% del oxígeno del planeta.",
+ciudad:"🏙️ En la ciudad debemos reciclar y usar menos plástico.",
+artico:"❄️ El Ártico se está derritiendo por el calentamiento global."
+};
+document.getElementById("mapaTexto").innerHTML=textos[l];
 }
 
-if(lugar==="oceano"){
-document.getElementById("mapaTexto").innerHTML=
-"🌊 El océano genera más del 50% del oxígeno del planeta.";
+/* JUEGO TIBURON */
+const canvas=document.getElementById("gameCanvas");
+const ctx=canvas.getContext("2d");
+
+let vidas=3;
+let jugando=true;
+
+const facts=[
+"¿Sabías que hay más de 8 millones de toneladas de plástico en el océano?",
+"Más de 100,000 animales marinos mueren cada año por contaminación.",
+"El plástico tarda hasta 400 años en degradarse."
+];
+
+const tiburonImg=new Image(); tiburonImg.src="tiburon.png";
+const pezImg=new Image(); pezImg.src="pez.png";
+const botellaImg=new Image(); botellaImg.src="botella.png";
+const bolsaImg=new Image(); bolsaImg.src="bolsa.png";
+
+let tiburon={x:50,y:150,w:160,h:120};
+let objetos=[];
+
+document.addEventListener("keydown",e=>{
+if(!jugando) return;
+if(e.key==="ArrowUp"){ e.preventDefault(); if(tiburon.y>0) tiburon.y-=20; }
+if(e.key==="ArrowDown"){ e.preventDefault(); if(tiburon.y<canvas.height-tiburon.h) tiburon.y+=20; }
+});
+
+function crear(){
+if(!jugando) return;
+let tipo=Math.random();
+let img=tipo<0.6?pezImg:(tipo<0.8?botellaImg:bolsaImg);
+let malo=!(tipo<0.6);
+objetos.push({x:canvas.width,y:Math.random()*(canvas.height-50),w:50,h:50,img:img,malo:malo});
+}
+setInterval(crear,1500);
+
+function actualizar(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+if(jugando){
+ctx.drawImage(tiburonImg,tiburon.x,tiburon.y,tiburon.w,tiburon.h);
+
+for(let i=0;i<objetos.length;i++){
+let o=objetos[i];
+o.x-=4;
+ctx.drawImage(o.img,o.x,o.y,o.w,o.h);
+
+if(o.x+o.w<0){
+if(!o.malo){
+vidas--;
+document.getElementById("vidasTexto").innerHTML="<strong>Vidas: "+vidas+"</strong>";
+}
+objetos.splice(i,1); i--; continue;
 }
 
-if(lugar==="ciudad"){
-document.getElementById("mapaTexto").innerHTML=
-"🏙️ En la ciudad debemos reciclar y usar menos plástico.";
+if(tiburon.x<o.x+o.w &&
+tiburon.x+tiburon.w>o.x &&
+tiburon.y<o.y+o.h &&
+tiburon.y+tiburon.h>o.y){
+
+if(o.malo){
+vidas--;
+document.getElementById("vidasTexto").innerHTML="<strong>Vidas: "+vidas+"</strong>";
+}
+objetos.splice(i,1); i--;
+}
 }
 
-if(lugar==="artico"){
-document.getElementById("mapaTexto").innerHTML=
-"❄️ El Ártico se está derritiendo por el calentamiento global.";
+if(vidas<=0){
+jugando=false;
+document.getElementById("mensajeFinal").innerHTML=
+"<strong>El mar está contaminado 🌊</strong><br>"+
+facts[Math.floor(Math.random()*facts.length)];
+}
 }
 
+requestAnimationFrame(actualizar);
+}
+actualizar();
+
+function reiniciar(){
+vidas=3;
+jugando=true;
+objetos=[];
+tiburon.y=150;
+document.getElementById("vidasTexto").innerHTML="<strong>Vidas: 3</strong>";
+document.getElementById("mensajeFinal").innerHTML="";
 }
 
 </script>
-
 </body>
 </html>
